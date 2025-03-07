@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../services/api';
 
@@ -12,6 +12,18 @@ export default function ResetPasswordConfirm() {
     const [error, setError] = useState('');
     const navigate = useNavigate();
 
+    useEffect(() => {
+        const validateToken = async () => {
+          try {
+            await api.post('auth/password_reset/validate_token/', { token });
+            setMessage('Token is valid. Please enter your new password.');
+          } catch (err) {
+            setError('Invalid or expired token. Please request a new reset link.');
+          }
+        };
+        validateToken();
+    }, [token]);
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (password !== confirmPassword) {
@@ -22,7 +34,7 @@ export default function ResetPasswordConfirm() {
         setMessage('');
         setError('');
         try {
-            await api.post('auth/password-reset/confirm/', { token, password });
+            await api.post('auth/password_reset/confirm/', { token, password });
             // await api.post('auth/password-reset/validate_token/', { token, password });
             setMessage('Password reset successful! Redirecting to login...');
             setTimeout(() => navigate('/auth/login'), 3000); // Redirect after 3 seconds

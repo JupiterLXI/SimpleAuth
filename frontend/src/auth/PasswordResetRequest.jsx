@@ -16,7 +16,7 @@ export default function PasswordResetRequest() {
         setMessage('');
         setError('');
         try {
-            await api.post('auth/password-reset/', { email });
+            await api.post('auth/password_reset/', { email });
             setMessage('A password reset link has been sent to your email.');
             setTimeout(() => navigate('/auth/login'), 3000); // Redirect after 3 seconds
         } catch (err) {
